@@ -14,8 +14,4 @@ export async function GET() {
     svc_length: svc.length,
   });
 }
-```
 
-Commit, attends le build, puis dans la console F12 :
-```
-fetch('/api/debug').then(function(r){return r.text()}).then(function(d){console.log(d)})
