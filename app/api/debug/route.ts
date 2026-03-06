@@ -1,31 +1,27 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const svc = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
   const result: any = {
-    url_starts: url.substring(0, 30),
+    url_exact: JSON.stringify(url),
+    url_length: url.length,
     svc_length: svc.length,
   };
 
   try {
-    const sb = createClient(url, svc, {
-      auth: { autoRefreshToken: false, persistSession: false },
+    const resp = await fetch(url + '/rest/v1/organizations?select=id&limit=1', {
+      headers: {
+        'apikey': svc,
+        'Authorization': 'Bearer ' + svc,
+      },
     });
-
-    const { data, error } = await sb.from('organizations').select('id').limit(1);
-
-    if (error) {
-      result.supabase_error = error.message;
-      result.supabase_code = error.code;
-    } else {
-      result.supabase_connected = true;
-      result.org_count = data ? data.length : 0;
-    }
+    result.status = resp.status;
+    result.body = await resp.text();
   } catch (err: any) {
-    result.catch_error = err.message;
+    result.error = err.message;
+    result.cause = err.cause ? String(err.cause) : 'none';
   }
 
   return NextResponse.json(result);
