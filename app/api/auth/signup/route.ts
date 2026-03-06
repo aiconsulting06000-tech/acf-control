@@ -66,4 +66,6 @@ export async function POST(request: Request) {
         ],
         non_delegable: [
           'Customer account termination',
-          'Ref
+          'Refunds above 500',
+          'Data deletion requests',
+        ],
